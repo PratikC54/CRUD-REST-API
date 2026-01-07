@@ -1,4 +1,4 @@
-package com.CRUD.demo.app;
+package com.CRUD.demo.entity;
 
 public class User {
     private int id ;
