@@ -21,33 +21,26 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
+    public ResponseEntity<String> createUser(@RequestBody User user) {
         userDB.put(user.getId(), user);
-        System.out.println("User Created");
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User Created");
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody User user , @PathVariable int id) {
+    public ResponseEntity<String> updateUser(@RequestBody User user , @PathVariable int id) {
         if (userDB.containsKey(id)) {
             userDB.put(id, user);
-            System.out.println("update successful");
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
-        } else {
-            System.out.println("no such user found on user id: " + id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("update successful");
+        } else
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no such user found on user id: " + id);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
         if (userDB.containsKey(id)) {
             userDB.remove(id);
-            System.out.println("User deleted successfully");
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
-        } else {
-            System.out.println("no such user found on user id: " + id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
+        } else
+            return new ResponseEntity<>("no such user found on user id: " + id , HttpStatus.NOT_FOUND);
     }
 }
