@@ -25,11 +25,7 @@ public class UserController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<User>  getUserById(@PathVariable int id) {
-        User foundUser = userService.getUserById(id);
-        if (foundUser!=null)
-            return ResponseEntity.status(HttpStatus.OK).body(foundUser);
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping("/create")
@@ -41,20 +37,17 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUser(@RequestBody User user , @PathVariable int id) {
-        User updatedUser = userService.updateUser(user);
-        if(updatedUser==null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no such user found on user id: " + id);
-        else
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("update successful");
+    public ResponseEntity<?> updateUser(@RequestBody User user , @PathVariable int id) {
+        return ResponseEntity.ok(userService.updateUser(id,user));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        boolean isDeleted = userService.deleteUser(id);
-        if(isDeleted)
-            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
-        else
-            return new ResponseEntity<>("no such user found on user id: " + id , HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+        return ResponseEntity.ok(userService.deleteUser(id));
+//        boolean isDeleted = userService.deleteUser(id);
+//        if(isDeleted)
+//            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
+//        else
+//            return new ResponseEntity<>("no such user found on user id: " + id , HttpStatus.NOT_FOUND);
     }
 }

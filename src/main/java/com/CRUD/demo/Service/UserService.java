@@ -1,5 +1,6 @@
 package com.CRUD.demo.Service;
 
+import com.CRUD.demo.Exceptions.UserNotFoundException;
 import com.CRUD.demo.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -17,23 +18,27 @@ public class UserService {
         return userDB.putIfAbsent(user.getId(), user) == null;
     }
 
-    public User updateUser(User user) {
-        if (!userDB.containsKey(user.getId()))
-            return null;
+    public User updateUser(int id , User user) {
+        if (!userDB.containsKey(id))
+            throw new UserNotFoundException("User not found with id: " + id);
         userDB.put(user.getId(),user);
         return user;
     }
 
-    public boolean deleteUser(int id) {
-        if (userDB.containsKey(id)) {
-            userDB.remove(id);
-            return true;
-        } else
-            return false;
+    public String  deleteUser(int id) {
+        if (!userDB.containsKey(id))
+            throw new UserNotFoundException("User not found with id: " + id);
+        userDB.remove(id);
+        return "USer deleted Successfully";
     }
 
     public User getUserById(int id) {
-        return userDB.getOrDefault(id, null);
+        User user = userDB.get(id);
+
+        if (user == null)
+            throw new UserNotFoundException("User not found with id: " + id);
+
+        return user;
     }
 
     public List<User> getAllUser() {
