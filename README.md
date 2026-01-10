@@ -40,7 +40,7 @@ This project is created to:
 
 ## 👤 Author
 
-**Pratik Senapati  
+Pratik Senapati  
 GitHub: [PratikC54](https://github.com/PratikC54)
 
 ---
