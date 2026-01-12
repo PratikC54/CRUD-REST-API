@@ -12,7 +12,11 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService = new UserService();
+    private final UserService userService ;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/get")
     public ResponseEntity<List<User>> getUser() {
@@ -29,11 +33,9 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@RequestBody User user) {
-        if (userService.createUser(user))
-            return ResponseEntity.status(HttpStatus.CREATED).body("User Created");
-        else
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createUser(user));
     }
 
     @PutMapping("/update/{id}")
@@ -43,11 +45,7 @@ public class UserController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        return ResponseEntity.ok(userService.deleteUser(id));
-//        boolean isDeleted = userService.deleteUser(id);
-//        if(isDeleted)
-//            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
-//        else
-//            return new ResponseEntity<>("no such user found on user id: " + id , HttpStatus.NOT_FOUND);
+        userService.deleteUser(id);
+        return ResponseEntity.accepted().build();
     }
 }

@@ -2,38 +2,40 @@ package com.CRUD.demo.Service;
 
 import com.CRUD.demo.Exceptions.UserNotFoundException;
 import com.CRUD.demo.entity.User;
+import com.CRUD.demo.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository ;
 
-    private Map<Integer, User> userDB = new HashMap<>();
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    public boolean createUser(User user) {
-        return userDB.putIfAbsent(user.getId(), user) == null;
+    public User createUser(User user) {
+        if(userRepository.userExist(user.getId()))
+            throw new RuntimeException("User already exists!!!!");
+        return userRepository.saveUser(user);
     }
 
     public User updateUser(int id , User user) {
-        if (!userDB.containsKey(id))
+        if (!userRepository.userExist(id))
             throw new UserNotFoundException("User not found with id: " + id);
-        userDB.put(user.getId(),user);
-        return user;
+        user.setId(id);
+        return userRepository.saveUser(user);
     }
 
-    public String  deleteUser(int id) {
-        if (!userDB.containsKey(id))
+    public void deleteUser(int id) {
+        if (!userRepository.userExist(id))
             throw new UserNotFoundException("User not found with id: " + id);
-        userDB.remove(id);
-        return "USer deleted Successfully";
+        userRepository.deleteUser(id);
     }
 
     public User getUserById(int id) {
-        User user = userDB.get(id);
+        User user = userRepository.findUserById(id);
 
         if (user == null)
             throw new UserNotFoundException("User not found with id: " + id);
@@ -42,6 +44,6 @@ public class UserService {
     }
 
     public List<User> getAllUser() {
-        return new ArrayList<>(userDB.values());
+        return userRepository.findAllUsers();
     }
 }
