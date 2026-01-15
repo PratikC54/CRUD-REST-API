@@ -1,23 +1,30 @@
 package com.CRUD.demo.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email")
+        }
+)
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id ;
+
+    @Column(nullable = false)
     private String name ;
+
+    @Column(nullable = false , unique = true)
     private String email ;
 
     public User(){}
-    public User(int id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

@@ -1,36 +1,14 @@
 package com.CRUD.demo.repositories;
 
 import com.CRUD.demo.entity.User;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@Repository
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
-    private final Map<Integer, User> userDB = new HashMap<>();
+    Optional<User> findByEmail(String email);
 
-    public boolean userExist(int id) {
-        return userDB.containsKey(id);
-    }
+    boolean existsByEmail(String email);
 
-    public User saveUser(User user) {
-        userDB.put(user.getId(), user);
-        return user;
-    }
-
-    public User findUserById(int id) {
-        return userDB.get(id);
-    }
-
-    public List<User> findAllUsers() {
-        return new ArrayList<>(userDB.values());
-    }
-
-    public void deleteUser(int id) {
-        userDB.remove(id);
-    }
 }

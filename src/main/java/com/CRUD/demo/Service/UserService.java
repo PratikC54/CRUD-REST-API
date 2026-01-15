@@ -16,34 +16,30 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if(userRepository.userExist(user.getId()))
+        if(userRepository.existsByEmail(user.getEmail()))
             throw new RuntimeException("User already exists!!!!");
-        return userRepository.saveUser(user);
+        return userRepository.save(user);
     }
 
     public User updateUser(int id , User user) {
-        if (!userRepository.userExist(id))
-            throw new UserNotFoundException("User not found with id: " + id);
-        user.setId(id);
-        return userRepository.saveUser(user);
+        User existingUser = getUserById(id);
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        return userRepository.save(existingUser);
     }
 
     public void deleteUser(int id) {
-        if (!userRepository.userExist(id))
+        if (!userRepository.existsById(id))
             throw new UserNotFoundException("User not found with id: " + id);
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     public User getUserById(int id) {
-        User user = userRepository.findUserById(id);
-
-        if (user == null)
-            throw new UserNotFoundException("User not found with id: " + id);
-
-        return user;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id "+id));
     }
 
     public List<User> getAllUser() {
-        return userRepository.findAllUsers();
+        return userRepository.findAll();
     }
 }
