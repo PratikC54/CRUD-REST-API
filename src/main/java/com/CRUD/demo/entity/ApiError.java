@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 public class ApiError {
     private int status;
     private String message;
-    private LocalDateTime localDateTime;
+    private LocalDateTime timeStamp;
 
-    public ApiError(int status, String message, LocalDateTime localDateTime) {
+    public ApiError(int status, String message) {
         this.status = status;
         this.message = message;
-        this.localDateTime = localDateTime;
+        this.timeStamp = LocalDateTime.now();
     }
 
     public int getStatus() {
@@ -21,7 +21,7 @@ public class ApiError {
         return message;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
     }
 }
