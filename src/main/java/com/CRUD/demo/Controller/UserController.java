@@ -5,14 +5,17 @@ import com.CRUD.demo.dto.UserRequestDTO;
 import com.CRUD.demo.dto.UserResponseDTO;
 import com.CRUD.demo.entity.User;
 import com.CRUD.demo.mapper.UserMapper;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService ;
@@ -22,14 +25,18 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getUser() {
-        List<UserResponseDTO> users =  userService.getAllUser()
-                .stream()
-                .map(UserMapper::toResponse).toList();
-        if(users.isEmpty())
-            return ResponseEntity.noContent().build();
-        else
-            return ResponseEntity.ok(users);
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<UserResponseDTO> response = userService.getUsers(pageable).map(UserMapper :: toResponse);
+        return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("/{id}")
@@ -39,21 +46,21 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
         User user = userService.createUser(UserMapper.toEntity(dto));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(UserMapper.toResponse(user));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserRequestDTO dto , @PathVariable int id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserRequestDTO dto , @PathVariable int id) {
         User user = userService.updateUser(id, UserMapper.toEntity(dto));
-        return ResponseEntity.ok(userService.updateUser(id,user));
+        return ResponseEntity.ok(UserMapper.toResponse(user));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 }

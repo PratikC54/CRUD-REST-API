@@ -1,8 +1,11 @@
 package com.CRUD.demo.Service;
 
+import com.CRUD.demo.Exceptions.DuplicateUserException;
 import com.CRUD.demo.Exceptions.UserNotFoundException;
 import com.CRUD.demo.entity.User;
 import com.CRUD.demo.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +20,7 @@ public class UserService {
 
     public  User createUser(User user) {
         if(userRepository.existsByEmail(user.getEmail()))
-            throw new RuntimeException("User already exists!!!!");
+            throw new DuplicateUserException("User already exists!!!!");
         return userRepository.save(user);
     }
 
@@ -41,5 +44,9 @@ public class UserService {
 
     public List<User> getAllUser() {
         return userRepository.findAll();
+    }
+
+    public Page<User> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }
